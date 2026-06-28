@@ -1,0 +1,4 @@
+*.backup
+*.dSYM
+build/*
+lib/*
