@@ -102,8 +102,11 @@ void print(int x) {
     if (t[x].s[1]) print(t[x].s[1]);
 }
 int main() {
-    freopen("P3369_9.in", "r", stdin);
-    freopen("check_P3369_9.out", "w", stdout);
+    // freopen("P3369_9.in", "r", stdin);
+    // freopen("check_P3369_9.out", "w", stdout);
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(0);
+    
     int n; std::cin >> n;
     insert(inf); insert(-inf);
     for (int i = 1; i <= n; i++) {

@@ -24,11 +24,11 @@ typedef struct {
 } AVLTree;
 
 // 公开 API
-AVLTree* avl_create(int n);
-void avl_insert(AVLTree* tree, int val);
-void avl_delete(AVLTree* tree, int val);
-Node* avl_find(AVLTree* tree, int val);
-void avl_destroy(AVLTree* tree);
+AVLTree* avl_create_tree(int n);
+void avl_insert_val(AVLTree* tree, int val);
+void avl_delete_val(AVLTree* tree, int val);
+Node* avl_find_val(AVLTree* tree, int val);
+void avl_destroy_tree(AVLTree* tree);
 Node* avl_upper_bound(AVLTree* tree, int val);
 Node* avl_lower_bound(AVLTree* tree, int val);
 Node* avl_find_successor(AVLTree* tree, int val);
@@ -239,7 +239,7 @@ static int find_rank(Node* NIL, Node* root, int val) {
     return rank + 1;
 }
 
-AVLTree* avl_create(int n) {
+AVLTree* avl_create_tree(int n) {
     if (n <= 0) return NULL;
 
     // 1. 分配树结构体
@@ -272,7 +272,7 @@ AVLTree* avl_create(int n) {
     return tree;
 }
 
-void avl_insert(AVLTree* tree, int val) {
+void avl_insert_val(AVLTree* tree, int val) {
     // 防止越界
     if (tree->idx >= tree->MAX_NODES) return;
 
@@ -293,16 +293,16 @@ void avl_insert(AVLTree* tree, int val) {
     insert(&tree->root, tree->nil, tree->root, node);
 }
 
-void avl_delete(AVLTree* tree, int val) {
+void avl_delete_val(AVLTree* tree, int val) {
     if (tree->root == tree->nil) return;
     delete_val(&tree->root, tree->nil, tree->root, val);
 }
 
-Node* avl_find(AVLTree* tree, int val) {
+Node* avl_find_val(AVLTree* tree, int val) {
     return find(tree->root, tree->nil, val);
 }
 
-void avl_destroy(AVLTree* tree) {
+void avl_destroy_tree(AVLTree* tree) {
     if (!tree) return;
     if (tree->nodes) free(tree->nodes);
     free(tree);
@@ -359,16 +359,16 @@ int main() {
     // freopen("my_P3369_8.out", "w", stdout);
     int n;
     scanf("%d", &n);
-    AVLTree* tree = avl_create(n);
+    AVLTree* tree = avl_create_tree(n);
     for (int i = 1, opt, x; i <= n; i++) {
         scanf("%d%d", &opt, &x);
         // printf("---");
         switch (opt) {
         case 1:
-            avl_insert(tree, x);
+            avl_insert_val(tree, x);
             break;
         case 2:
-            avl_delete(tree, x);
+            avl_delete_val(tree, x);
             break;
         case 3:
             // printf("Smaller than %d : totally %d.\n", x, avl_find_rank(tree, x));
@@ -390,6 +390,6 @@ int main() {
             break;
         }
     }
-    avl_destroy(tree);
+    avl_destroy_tree(tree);
     return 0;
 }

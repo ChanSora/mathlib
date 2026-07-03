@@ -1,10 +1,8 @@
 #include "avl_tree.h"
 #include <stdlib.h>
-#include <stdio.h>
-inline static int max(int a, int b) {return a > b ? a : b;}
-// inline static int abs(int a) {return a > 0 ? a : - a;}
 
-// Node 结构体定义在 .c 文件（外部不可见）
+inline static int max(int a, int b) {return a > b ? a : b;}
+
 struct Node {
     struct Node* parent;
     struct Node* left;
@@ -86,9 +84,6 @@ static void rebalance(Node** root_ptr, Node* NIL, Node* pivot) {
 }
 
 static void insert(Node** root_ptr, Node* NIL, Node* root, Node* node) {
-    // printf("current root:%d\n", root->val);
-    // printf("left: %d, right: %d.\n", root->left->val, root->right->val);
-    // printf("node val:%d\n", node->val);
     if (node->val < root->val) {
         if (root->left == NIL) {
             node->parent = root;
@@ -111,12 +106,6 @@ static void insert(Node** root_ptr, Node* NIL, Node* root, Node* node) {
 static Node* find_min(Node* NIL, Node* node) {
     if (node == NIL) return NIL;
     while (node->left != NIL) node = node->left;
-    return node;
-}
-
-static Node* find_max(Node* NIL, Node* node) {
-    if (node == NIL) return NIL;
-    while (node->right != NIL) node = node->right;
     return node;
 }
 
@@ -197,43 +186,32 @@ static Node* kth(Node* NIL, Node* root, int k) {  // 1-indexed
 static int find_rank(Node* NIL, Node* root, int val) {
     int rank = 0;
     while (root != NIL) {
-        if (val < root->val) {
+        if (val <= root->val) {
+            // 当前节点 >= val，所以首个 val 必然在左子树，直接向左走
             root = root->left;
-        } else if (val > root->val) {
-            rank += (root->left == NIL ? 0 : root->left->size) + 1;
-            root = root->right;
         } else {
-            // 相等：向左找到最左边的等于 val 的节点
-            Node* cur = root;
-            while (cur->left != NIL && cur->left->val == val) {
-                cur = cur->left;
-            }
-            rank += (cur->left == NIL ? 0 : cur->left->size);
-            break;
+            // val > root->val，当前节点和左子树全部严格小于 val
+            rank += root->left->size + 1;
+            root = root->right;
         }
     }
     return rank + 1;
 }
 
-AVLTree* avl_create(int n) {
+AVLTree* avl_create_tree(int n) {
     if (n <= 0) return NULL;
 
-    // 1. 分配树结构体
     AVLTree* tree = (AVLTree*)malloc(sizeof(AVLTree));
     if (!tree) return NULL;
 
-    // 2. 分配节点池（索引 0 留给哨兵）
     tree->nodes = (Node*)malloc((n + 1) * sizeof(Node));
     if (!tree->nodes) {
         free(tree);
         return NULL;
     }
 
-    // 3. 初始化
     tree->idx = 0;
     tree->MAX_NODES = n;
-
-    // 4. 初始化哨兵节点（索引 0）
     tree->nil = &tree->nodes[0];
     tree->nil->parent = tree->nil;
     tree->nil->left = tree->nil;
@@ -242,14 +220,12 @@ AVLTree* avl_create(int n) {
     tree->nil->val = 0;
     tree->nil->size = 0;
 
-    // 5. 根节点初始指向哨兵（空树）
     tree->root = tree->nil;
 
     return tree;
 }
 
-void avl_insert(AVLTree* tree, int val) {
-    // 防止越界
+void avl_insert_val(AVLTree* tree, int val) {
     if (tree->idx >= tree->MAX_NODES) return;
 
     int idx = ++tree->idx;
@@ -269,7 +245,7 @@ void avl_insert(AVLTree* tree, int val) {
     insert(&tree->root, tree->nil, tree->root, node);
 }
 
-void avl_delete(AVLTree* tree, int val) {
+void avl_delete_val(AVLTree* tree, int val) {
     if (tree->root == tree->nil) return;
     delete_val(&tree->root, tree->nil, tree->root, val);
 }
@@ -278,7 +254,11 @@ Node* avl_find(AVLTree* tree, int val) {
     return find(tree->root, tree->nil, val);
 }
 
-void avl_destroy(AVLTree* tree) {
+int avl_find_val(AVLTree* tree, int val) {
+    return find(tree->root, tree->nil, val)->val;
+}
+
+void avl_destroy_tree(AVLTree* tree) {
     if (!tree) return;
     if (tree->nodes) free(tree->nodes);
     free(tree);

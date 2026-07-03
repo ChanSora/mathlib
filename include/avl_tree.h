@@ -15,11 +15,12 @@ typedef struct {
 } AVLTree;
 
 // 公开 API
-AVLTree* avl_create(int n);
-void avl_insert(AVLTree* tree, int val);
-void avl_delete(AVLTree* tree, int val);
+AVLTree* avl_create_tree(int n);
+void avl_insert_val(AVLTree* tree, int val);
+void avl_delete_val(AVLTree* tree, int val);
 Node* avl_find(AVLTree* tree, int val);
-void avl_destroy(AVLTree* tree);
+int avl_find_val(AVLTree* tree, int val);
+void avl_destroy_tree(AVLTree* tree);
 Node* avl_upper_bound(AVLTree* tree, int val);
 Node* avl_lower_bound(AVLTree* tree, int val);
 Node* avl_find_successor(AVLTree* tree, int val);
@@ -29,6 +30,5 @@ int avl_find_predecessor_val(AVLTree* tree, int val);
 Node* avl_find_kth(AVLTree* tree, int k);
 int avl_find_kth_val(AVLTree* tree, int val);
 int avl_find_rank(AVLTree* tree, int val);
-
 
 #endif

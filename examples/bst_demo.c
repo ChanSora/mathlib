@@ -4,15 +4,15 @@
 int main() {
     int n;
     scanf("%d", &n);
-    AVLTree* tree = avl_create(n);
+    AVLTree* tree = avl_create_tree(n);
     for (int i = 1, opt, x; i <= n; i++) {
         scanf("%d%d", &opt, &x);
         switch (opt) {
         case 1:
-            avl_insert(tree, x);
+            avl_insert_val(tree, x);
             break;
         case 2:
-            avl_delete(tree, x);
+            avl_delete_val(tree, x);
             break;
         case 3:
             // printf("Smaller than %d : totally %d.\n", x, avl_find_rank(tree, x));
@@ -34,6 +34,6 @@ int main() {
             break;
         }
     }
-    avl_destroy(tree);
+    avl_destroy_tree(tree);
     return 0;
 }
