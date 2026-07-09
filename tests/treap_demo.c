@@ -6,7 +6,7 @@ typedef struct Node {
     struct Node* right;
     int val;
     int size;
-    int weight;
+    int priority;
 } Node;
 
 static void update_size(Node* node, Node* NIL) {
@@ -88,7 +88,7 @@ static void insert(Node** root_ptr, Node* node, Node* NIL) {
     if (node->val < parent->val) parent->left = node;
     else parent->right = node;
 
-    while (node->weight > parent->weight && node->parent != NIL) {
+    while (node->priority > parent->priority && node->parent != NIL) {
         if (node == parent->left) rotate_right(root_ptr, parent, NIL);
         else rotate_left(root_ptr, parent, NIL);
         parent = node->parent;
@@ -195,7 +195,7 @@ static Node* allocate_node(int val, Node* NIL) {
     node[idx].right = NIL;
     node[idx].val = val;
     node[idx].size = 1;
-    node[idx].weight = rand();
+    node[idx].priority = rand();
     return &node[idx];
 }
 
@@ -209,7 +209,7 @@ int main() {
     NIL->right = NIL;
     NIL->size = 0;
     NIL->val = 0;
-    NIL->weight = 0;
+    NIL->priority = 0;
 
     root_ptr = NIL;
 

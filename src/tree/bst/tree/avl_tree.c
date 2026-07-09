@@ -245,7 +245,7 @@ void avl_tree_insert(AVL_Tree* tree, int val) {
     insert(&tree->root, tree->nil, tree->root, node);
 }
 
-void avl_tree_delete(AVL_Tree* tree, int val) {
+void avl_tree_erase(AVL_Tree* tree, int val) {
     if (tree->root == tree->nil) return;
     delete_val(&tree->root, tree->nil, tree->root, val);
 }
@@ -276,7 +276,7 @@ Node* avl_tree_next(AVL_Tree* tree, int val) {
     return upper_bound(tree->root, tree->nil, val);
 }
 
-int avl_next_val(AVL_Tree* tree, int val) {
+int avl_tree_next_val(AVL_Tree* tree, int val) {
     return avl_tree_next(tree, val)->val;
 }
 

@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 #include "rb_tree.h"
 
 typedef enum Color {BLACK = 0, RED = 1} Color;

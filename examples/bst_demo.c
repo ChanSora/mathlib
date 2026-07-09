@@ -1,39 +1,25 @@
-#include "avl_tree.h"
+#include <utensils/tree.h>
 #include <stdio.h>
 
 int main() {
-    int n;
-    scanf("%d", &n);
-    AVL_Tree* tree = avl_tree_create(n);
-    for (int i = 1, opt, x; i <= n; i++) {
-        scanf("%d%d", &opt, &x);
-        switch (opt) {
-        case 1:
-            avl_tree_insert(tree, x);
-            break;
-        case 2:
-            avl_tree_delete(tree, x);
-            break;
-        case 3:
-            // printf("Smaller than %d : totally %d.\n", x, avl_tree_rank(tree, x));
-            printf("%d\n", avl_tree_rank(tree, x));
-            break;
-        case 4:
-            // printf("the %dth number: %d.\n", x, avl_tree_kth_val(tree, x));
-            printf("%d\n", avl_tree_kth_val(tree, x));
-            break;
-        case 5:
-            // printf("predecessor of %d: %d.\n", x, avl_tree_prev_val(tree, x));
-            printf("%d\n", avl_tree_prev_val(tree, x));
-            break;
-        case 6:
-            // printf("successor of %d: %d.\n", x, avl_next_val(tree, x));
-            printf("%d\n", avl_next_val(tree, x));
-            break;
-        default:
-            break;
-        }
-    }
-    avl_tree_destroy(tree);
+    // 1. 初始化红黑树
+    Tree t = tree_init(RB_TREE);
+    t.create(&t, 1000);
+    
+    // 2. 插入数据
+    t.insert(&t, 50);
+    t.insert(&t, 30);
+    t.insert(&t, 70);
+    
+    // 3. 查找
+    void* node = t.find(&t, 30);
+    printf("Found node: %p\n", node);
+    
+    // 4. 排名（如果支持 size）
+    int rank = t.rank(&t, 50);
+    printf("Rank of 50: %d\n", rank);
+    
+    // 5. 销毁
+    t.destroy(&t);
     return 0;
 }

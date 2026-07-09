@@ -1,12 +1,14 @@
 #include <stdlib.h>
-#include <stdio.h>
+
+#include "treap.h"
+
 typedef struct Node {
     struct Node* parent;
     struct Node* left;
     struct Node* right;
     int val;
     int size;
-    int weight;
+    int priority;
 } Node;
 
 static void update_size(Node* node, Node* NIL) {
@@ -88,7 +90,7 @@ static void insert(Node** root_ptr, Node* node, Node* NIL) {
     if (node->val < parent->val) parent->left = node;
     else parent->right = node;
 
-    while (node->weight > parent->weight && node->parent != NIL) {
+    while (node->priority > parent->priority && node->parent != NIL) {
         if (node == parent->left) rotate_right(root_ptr, parent, NIL);
         else rotate_left(root_ptr, parent, NIL);
         parent = node->parent;
@@ -178,51 +180,96 @@ static Node* upper_bound(Node* node, int val, Node* NIL) {
     return next;
 }
 
-static void inorder(Node* node, Node* NIL) {
-    if (node == NIL) return;
-    inorder(node->left, NIL);
-    printf("In node %d\n", node->val);
-    inorder(node->right, NIL);
-}
+Treap* treap_create(int n) {
+    if (n <= 0) return NULL;
 
-Node node[1000010];
-int idx;
+    Treap* tree = (Treap*)malloc(sizeof(Treap));
+    if (!tree) return NULL;
 
-static Node* allocate_node(int val, Node* NIL) {
-    ++idx;
-    node[idx].parent = NIL;
-    node[idx].left = NIL;
-    node[idx].right = NIL;
-    node[idx].val = val;
-    node[idx].size = 1;
-    node[idx].weight = rand();
-    return &node[idx];
-}
-
-int main() {
-    Node nil_node = node[0];
-    Node* NIL = &nil_node;
-    Node* root_ptr;
-    
-    NIL->parent = NIL;
-    NIL->left = NIL;
-    NIL->right = NIL;
-    NIL->size = 0;
-    NIL->val = 0;
-    NIL->weight = 0;
-
-    root_ptr = NIL;
-
-    int n;
-    scanf("%d", &n);
-    for (int i = 1, opt, x; i <= n; i++) {
-        scanf("%d%d", &opt, &x);
-        if (opt == 1) insert(&root_ptr, allocate_node(x, NIL), NIL);
-        if (opt == 2) erase(&root_ptr, x, NIL);
-        if (opt == 3) printf("%d\n", rank(root_ptr, x, NIL));
-        if (opt == 4) printf("%d\n", kth(root_ptr, x, NIL)->val);
-        if (opt == 5) printf("%d\n", prev(root_ptr, x, NIL)->val);
-        if (opt == 6) printf("%d\n", upper_bound(root_ptr, x, NIL)->val);
+    tree->nodes = (Node*)malloc((n + 1) * sizeof(Node));
+    if (!tree->nodes) {
+        free(tree);        
+        return NULL;
     }
-    return 0;
+    tree->nil = &tree->nodes[0];
+    tree->nil->parent = tree->nil;
+    tree->nil->left = tree->nil;
+    tree->nil->right = tree->nil; 
+    tree->nil->val = 0;
+    tree->nil->size = 0;
+    tree->nil->priority = 0;
+
+    tree->root = tree->nil;
+    tree->idx = 0;
+    tree->capacity = n;
+    return tree;
 }
+
+void treap_destroy(Treap* tree) {
+    if (!tree) return;
+    free(tree->nodes);
+    free(tree);
+}
+
+void treap_insert(Treap* tree, int val) {
+    if (tree->idx >= tree->capacity) return;
+
+    Node* node = &tree->nodes[++tree->idx];
+    node->val = val;
+    node->parent = tree->nil;
+    node->left = tree->nil;
+    node->right = tree->nil;
+    node->size = 1;
+    node->priority = rand();
+
+    insert(&tree->root, node, tree->nil);
+}
+
+void treap_erase(Treap* tree, int val) {
+    erase(&tree->root, val, tree->nil);
+}
+
+Node* treap_find(Treap* tree, int val) {
+    return find(tree->root, val, tree->nil);
+}
+
+int treap_find_val(Treap* tree, int val) {
+    return find(tree->root, val, tree->nil)->val;
+}
+
+int treap_rank(Treap* tree, int val) {
+    return rank(tree->root, val, tree->nil);
+}
+
+Node* treap_kth(Treap* tree, int k) {
+    return kth(tree->root, k, tree->nil);
+}
+
+int treap_kth_val(Treap* tree, int k) {
+    return kth(tree->root, k, tree->nil)->val;
+}
+
+Node* treap_prev(Treap* tree, int val) {
+    return prev(tree->root, val, tree->nil);
+}
+
+int treap_prev_val(Treap* tree, int val) {
+    return prev(tree->root, val, tree->nil)->val;
+}
+
+Node* treap_lower_bound(Treap* tree, int val) {
+    return lower_bound(tree->root, val, tree->nil);
+}
+
+Node* treap_upper_bound(Treap* tree, int val) {
+    return upper_bound(tree->root, val, tree->nil);
+}
+
+Node* treap_next(Treap* tree, int val) {
+    return upper_bound(tree->root, val, tree->nil);
+}
+
+int treap_next_val(Treap* tree, int val) {
+    return upper_bound(tree->root, val, tree->nil)->val;
+}
+

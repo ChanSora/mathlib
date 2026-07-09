@@ -1,5 +1,6 @@
 #include <stdlib.h>
-#include <stdio.h>
+
+#include "splay.h"
 
 typedef struct Node {
     struct Node* parent;
@@ -134,10 +135,12 @@ static void erase(Node** root_ptr, int val, Node* NIL) {
         else if (val > cur->val) cur = cur->right;
         else break;
     }
+
     if (cur == NIL) {
         splay(root_ptr, parent, NIL);
         return;
     }
+    
     if (cur->cnt > 1) {
         cur->cnt--;
         splay(root_ptr, cur, NIL);
@@ -245,12 +248,96 @@ static Node* upper_bound(Node** root_ptr, int val, Node* NIL) {
     return next;
 }
 
-static void inorder(Node* node, Node* NIL, int height) {
-    if (node == NIL) {
-        printf("reach leaf, height: %d\n", height);
-        return;
+Splay* splay_create(int n) {
+    if (n <= 0) return NULL;
+
+    Splay* tree = (Splay*)malloc(sizeof(Splay));
+    if (!tree) return NULL;
+
+    tree->nodes = (Node*)malloc((n + 1) * sizeof(Node));
+    if (!tree->nodes) {
+        free(tree);        
+        return NULL;
     }
-    inorder(node->left, NIL, height + 1);
-    // printf("In node %d\n", node->val);
-    inorder(node->right, NIL, height + 1);
+    tree->nil = &tree->nodes[0];
+    tree->nil->parent = tree->nil;
+    tree->nil->left = tree->nil;
+    tree->nil->right = tree->nil; 
+    tree->nil->val = 0;
+    tree->nil->size = 0;
+    tree->nil->cnt = 0;
+
+    tree->root = tree->nil;
+    tree->idx = 0;
+    tree->capacity = n;
+    return tree;
 }
+
+void splay_destroy(Splay* tree) {
+    if (!tree) return;
+    free(tree->nodes);
+    free(tree);
+}
+
+void splay_insert(Splay* tree, int val) {
+    if (tree->idx >= tree->capacity) return;
+
+    Node* node = &tree->nodes[++tree->idx];
+    node->val = val;
+    node->parent = tree->nil;
+    node->left = tree->nil;
+    node->right = tree->nil;
+    node->size = 1;
+    node->cnt = 1;
+
+    insert(&tree->root, node, tree->nil);
+}
+
+void splay_erase(Splay* tree, int val) {
+    erase(&tree->root, val, tree->nil);
+}
+
+Node* splay_find(Splay* tree, int val) {
+    return find(tree->root, val, tree->nil);
+}
+
+int splay_find_val(Splay* tree, int val) {
+    return find(tree->root, val, tree->nil)->val;
+}
+
+int splay_rank(Splay* tree, int val) {
+    return rank(tree->root, val, tree->nil);
+}
+
+Node* splay_kth(Splay* tree, int k) {
+    return kth(tree->root, k, tree->nil);
+}
+
+int splay_kth_val(Splay* tree, int k) {
+    return kth(tree->root, k, tree->nil)->val;
+}
+
+Node* splay_prev(Splay* tree, int val) {
+    return prev(tree->root, val, tree->nil);
+}
+
+int splay_prev_val(Splay* tree, int val) {
+    return prev(tree->root, val, tree->nil)->val;
+}
+
+Node* splay_lower_bound(Splay* tree, int val) {
+    return lower_bound(tree->root, val, tree->nil);
+}
+
+Node* splay_upper_bound(Splay* tree, int val) {
+    return upper_bound(tree->root, val, tree->nil);
+}
+
+Node* splay_next(Splay* tree, int val) {
+    return upper_bound(tree->root, val, tree->nil);
+}
+
+int splay_next_val(Splay* tree, int val) {
+    return upper_bound(tree->root, val, tree->nil)->val;
+}
+
